@@ -1,26 +1,46 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import "./App.css"
+import { useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import Container from "./components/Container"
+import DetailsPane from "./panes/DetailsPane"
+import EnvironmentPane from "./panes/EnvironmentPane"
+import HeaderPane from "./panes/HeaderPane"
+import LinkPane from "./panes/LinkPane"
+import ProductImagePane from "./panes/ProductImagePane"
+import { getProducts } from "./redux/actions/actions"
+import { getCurrentProductFail, getProductsFail } from "./redux/selectors"
+import { HeadingEnum } from "./enum/headings"
+import ErrorMessage from "./components/ErrorMessage"
+import Heading from "./components/Heading"
+import Sub from "./components/Sub"
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const dispatch = useDispatch()
+	const productsFail = useSelector(getProductsFail)
+	const productFail = useSelector(getCurrentProductFail)
+
+	useEffect(() => {
+		dispatch(getProducts())
+	})
+
+	return (
+		<Container>
+			<HeaderPane />
+			{!(productFail || productsFail) ? (
+				<>
+					<DetailsPane />
+					<EnvironmentPane />
+					<ProductImagePane />
+					<LinkPane />
+				</>
+			) : (
+				<ErrorMessage>
+					<Heading text="Oops... Something went wrong" as={HeadingEnum.H1} />
+					<Sub>It seems we couldn't get the data you requested.</Sub>
+				</ErrorMessage>
+			)}
+		</Container>
+	)
 }
 
-export default App;
+export default App
